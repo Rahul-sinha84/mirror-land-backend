@@ -179,3 +179,99 @@ async def generate_chapter_level(chapter_number: int, tool_context: ToolContext)
         })
 
     return result
+
+
+# ---------------------------------------------------------------------------
+# Standalone pre-fetch (no ADK ToolContext required)
+# ---------------------------------------------------------------------------
+
+async def prefetch_chapter_level(
+    chapter_number: int,
+    session_id: str,
+    story_plan: dict,
+    story_pack: dict,
+) -> dict:
+    """
+    Generate a chapter level directly, bypassing ADK agent overhead.
+
+    Used for background pre-fetching of chapters 2 and 3 while the player
+    is playing chapter 1.  Writes files to disk and pushes SSE events.
+
+    Returns the same result dict as generate_chapter_level.
+    """
+    chapters = story_plan.get("chapters", [])
+    chapter = None
+    for ch in chapters:
+        if ch.get("chapter_number") == chapter_number:
+            chapter = ch
+            break
+
+    if chapter is None:
+        logger.warning("Prefetch: chapter %d not found in story plan", chapter_number)
+        return {"status": "error", "message": f"Chapter {chapter_number} not found"}
+
+    output_dir = os.path.join(ASSETS_ROOT, session_id)
+    os.makedirs(output_dir, exist_ok=True)
+
+    art_style = story_plan.get("art_style", "retro_pixel")
+    mood = story_plan.get("mood", "adventure")
+    setting = chapter.get("setting", "a game world")
+
+    music_path = os.path.join(output_dir, f"ch{chapter_number:02d}_ambient.wav")
+    music_prompt = f"{setting}, {art_style} aesthetic"
+
+    logger.info("Prefetch: starting chapter %d generation", chapter_number)
+
+    level_json, bg_path, music_result = await asyncio.gather(
+        generate_level_json(chapter, story_plan, story_pack),
+        generate_chapter_background(chapter, art_style, output_dir),
+        generate_ambient_music(music_prompt, mood, music_path),
+        return_exceptions=True,
+    )
+
+    result: dict = {"status": "success", "chapter_number": chapter_number}
+
+    if isinstance(level_json, Exception):
+        logger.error("Prefetch: level JSON failed for ch%d: %s", chapter_number, level_json)
+        result["level_json"] = None
+        result["level_error"] = str(level_json)
+    else:
+        level_path = os.path.join(output_dir, f"level_ch{chapter_number:02d}.json")
+        with open(level_path, "w") as f:
+            json.dump(level_json, f, indent=2)
+        result["level_json"] = level_json
+        result["level_path"] = level_path
+
+    bg_url = None
+    if isinstance(bg_path, Exception):
+        logger.error("Prefetch: background failed for ch%d: %s", chapter_number, bg_path)
+    else:
+        bg_url = _asset_url(session_id, bg_path)
+        result["background_url"] = bg_path
+
+    music_url = None
+    if isinstance(music_result, Exception) or music_result is None:
+        result["music_url"] = None
+    else:
+        music_url = _asset_url(session_id, music_result)
+        result["music_url"] = music_result
+
+    if not isinstance(level_json, Exception):
+        await stream_to_client(session_id, {
+            "type": "level_ready",
+            "data": {
+                "chapter_number": chapter_number,
+                "level_json": level_json,
+                "background_url": bg_url,
+                "music_url": music_url,
+            },
+        })
+
+    if music_url:
+        await stream_to_client(session_id, {
+            "type": "audio",
+            "data": {"role": f"ch{chapter_number:02d}_ambient", "url": music_url},
+        })
+
+    logger.info("Prefetch: chapter %d complete", chapter_number)
+    return result
