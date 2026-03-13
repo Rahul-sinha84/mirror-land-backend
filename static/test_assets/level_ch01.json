@@ -1,0 +1,259 @@
+{
+  "level_id": "level_001",
+  "chapter": "Marshmallow Mound Landing",
+  "chapter_number": 1,
+  "narration": "You awaken to a gentle bounce, your ship a wreck amidst a sea of fluffy white. You've crash-landed on a planet made entirely of sweets!",
+  "background": "backgrounds/ch01_bg.png",
+  "bg_music": "audio/ch01_ambient.mp3",
+  "world": {
+    "width": 4500,
+    "height": 1080
+  },
+  "assets": {},
+  "mission": {
+    "type": "find_key_exit",
+    "description": "Your ship is damaged! Find the primary power cog lost somewhere in the marshmallow mounds to get started on repairs.",
+    "target_count": 1,
+    "success_text": "You found the power cog! Now to find the main repair station.",
+    "fail_text": "The cog is too important to leave behind! Try again."
+  },
+  "platforms": [
+    {
+      "x": 0,
+      "y": 850,
+      "w": 860,
+      "h": 230,
+      "role": "ground",
+      "color": "#FFF0F5"
+    },
+    {
+      "x": 700,
+      "y": 650,
+      "w": 192,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 950,
+      "y": 550,
+      "w": 192,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 1100,
+      "y": 850,
+      "w": 700,
+      "h": 230,
+      "role": "ground",
+      "color": "#FFF0F5"
+    },
+    {
+      "x": 2000,
+      "y": 850,
+      "w": 700,
+      "h": 230,
+      "role": "ground",
+      "color": "#FFF0F5"
+    },
+    {
+      "x": 2200,
+      "y": 700,
+      "w": 192,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 2450,
+      "y": 600,
+      "w": 192,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 2800,
+      "y": 850,
+      "w": 1700,
+      "h": 230,
+      "role": "ground",
+      "color": "#FFF0F5"
+    },
+    {
+      "x": 3400,
+      "y": 700,
+      "w": 192,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 3650,
+      "y": 600,
+      "w": 192,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 1575,
+      "y": 625,
+      "w": 192,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 2925,
+      "y": 650,
+      "w": 192,
+      "h": 48,
+      "role": "platform"
+    }
+  ],
+  "pickups": [
+    {
+      "role": "coin",
+      "x": 998,
+      "y": 518
+    },
+    {
+      "role": "health",
+      "x": 2100,
+      "y": 818
+    },
+    {
+      "role": "coin",
+      "x": 2248,
+      "y": 668
+    },
+    {
+      "role": "key",
+      "x": 2498,
+      "y": 568
+    },
+    {
+      "role": "coin",
+      "x": 3698,
+      "y": 568
+    }
+  ],
+  "enemies": [
+    {
+      "role": "enemy_1",
+      "x": 1300,
+      "y": 806,
+      "patrol": [
+        1200,
+        1600
+      ],
+      "behavior": "patrol"
+    },
+    {
+      "role": "enemy_1",
+      "x": 3000,
+      "y": 806,
+      "patrol": [
+        2900,
+        3500
+      ],
+      "behavior": "patrol"
+    },
+    {
+      "role": "enemy_1",
+      "x": 3750,
+      "y": 806,
+      "patrol": [
+        3650,
+        3950
+      ],
+      "behavior": "patrol"
+    }
+  ],
+  "blocks": [
+    {
+      "x": 1500,
+      "y": 754,
+      "w": 48,
+      "h": 48,
+      "role": "breakable",
+      "has_item": true,
+      "item": "coin"
+    },
+    {
+      "x": 3200,
+      "y": 754,
+      "w": 48,
+      "h": 48,
+      "role": "breakable",
+      "has_item": true,
+      "item": "coin"
+    }
+  ],
+  "hazards": [
+    {
+      "x": 1800,
+      "y": 830,
+      "w": 200,
+      "h": 20,
+      "type": "lemonade_acid"
+    }
+  ],
+  "bounce_pads": [
+    {
+      "x": 700,
+      "y": 834,
+      "w": 64,
+      "h": 16,
+      "bounce_force": -900
+    }
+  ],
+  "teleporters": [],
+  "npcs": [
+    {
+      "role": "npc",
+      "x": 300,
+      "y": 786,
+      "name": "Peppermint Elder",
+      "dialogue": [
+        {
+          "speaker": "Peppermint Elder",
+          "text": "Welcome, little one! Your vessel's crash has scattered the primary power cog. It glows with a sugary light, you cannot miss it."
+        },
+        {
+          "speaker": "system",
+          "text": "Find the primary power cog to begin repairs!"
+        }
+      ]
+    }
+  ],
+  "exit": {
+    "role": "exit_door",
+    "x": 4322,
+    "y": 658,
+    "w": 128,
+    "h": 192,
+    "unlock_condition": "has_key",
+    "locked_dialogue": "The exit portal shimmers, but requires the primary power cog to stabilize.",
+    "target_level": "level_002"
+  },
+  "player_spawn": {
+    "x": 60,
+    "y": 780
+  },
+  "physics": {
+    "gravity": 1200,
+    "jump_force": -700,
+    "move_speed": 300,
+    "max_fall_speed": 600,
+    "friction": 800,
+    "coyote_time_ms": 80,
+    "jump_buffer_ms": 100
+  },
+  "mechanics": {
+    "auto_run": false,
+    "player_action": "none",
+    "gravity_scale": 1.0,
+    "double_jump": false,
+    "dark_mode": false,
+    "spotlight_radius": 0,
+    "weather": "none",
+    "weather_intensity": 0.4
+  }
+}

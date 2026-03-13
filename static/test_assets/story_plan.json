@@ -1,22 +1,22 @@
 {
-  "story_id": "candy-planet-explorer",
-  "title": "The Sweetest Odyssey",
-  "premise": "A tiny astronaut crash-lands on a vibrant candy planet and must navigate its sugary landscapes to repair their ship and return home.",
-  "art_style": "watercolor",
+  "story_id": "candy-cosmos-quest",
+  "title": "The Candy Cosmos Quest",
+  "premise": "A pint-sized space explorer ventures across a universe made of sweets, seeking to uncover the legendary Sugar Star.",
+  "art_style": "chalk",
   "mood": "whimsical_wonder",
-  "sound_pack": "fantasy",
+  "sound_pack": "retro",
   "chapters": [
     {
       "chapter_number": 1,
-      "title": "Marshmallow Mound Landing",
-      "setting": "A soft, bouncy landscape of giant marshmallows and fluffy cotton candy clouds under a pastel sky. Gumdrop trees dot the horizon, and streams of sparkling lemonade flow gently.",
-      "narration": "You awaken to a gentle bounce, your ship a wreck amidst a sea of fluffy white. You've crash-landed on a planet made entirely of sweets!",
+      "title": "Gummy Grove Galaxy",
+      "setting": "A vibrant planet where trees are lollipops, rivers flow with lemonade, and the ground is soft, spongy gummy. Bright, pastel colors dominate the landscape.",
+      "narration": "You arrive at Gummy Grove, a planet bursting with sweet scents and bouncy terrain. Your mission is clear: find the Sugar Crystal Key to unlock the path forward.",
       "mission": {
         "type": "find_key_exit",
-        "description": "Your ship is damaged! Find the primary power cog lost somewhere in the marshmallow mounds to get started on repairs.",
+        "description": "Find the glistening Sugar Crystal Key to unlock the next area!",
         "target_count": 1,
-        "success_text": "You found the power cog! Now to find the main repair station.",
-        "fail_text": "The cog is too important to leave behind! Try again."
+        "success_text": "The Sugar Crystal Key hums, opening the way to new sugary adventures!",
+        "fail_text": "You couldn't find the key. The path remains locked."
       },
       "mechanics": {
         "auto_run": false,
@@ -24,69 +24,69 @@
         "gravity_scale": 1.0,
         "double_jump": false,
         "dark_mode": false,
-        "weather": "none",
+        "weather": "embers",
         "weather_intensity": 0.4
       },
       "difficulty": "easy"
     },
     {
       "chapter_number": 2,
-      "title": "Lollipop Forest Foraging",
-      "setting": "A dense forest of towering, swirling lollipops and candy cane trees, with rivers of flowing caramel and paths paved with colorful sprinkles under a bright, sugary sun.",
-      "narration": "Deeper into the candy world you venture, where the lollipop trees scrape the pastel sky. More ship components are needed, but beware of the local sweet-toothed inhabitants.",
+      "title": "Chocolate Crater Challenge",
+      "setting": "A rugged planet with dark chocolate craters, molten caramel rivers, and treacherous nougat cliffs. Steam rises from hot fudge geysers, creating a thick, sweet mist.",
+      "narration": "You land on the perilous Chocolate Crater, a world filled with delicious dangers. Collect rare Cocoa Beans to power your ship and escape the sticky traps.",
       "mission": {
         "type": "collect_all",
-        "description": "Gather 5 vital circuit clusters from within the Lollipop Forest to fix your ship's navigation system. Watch out for mischievous Gummy Grubs!",
+        "description": "Collect all 5 rare Cocoa Beans to refuel your ship!",
         "target_count": 5,
-        "success_text": "You've collected enough circuits! Your navigation system is back online.",
-        "fail_text": "You still need more circuits! Don't let the Gummy Grubs get the best of you."
+        "success_text": "With the Cocoa Beans collected, your ship hums with renewed energy!",
+        "fail_text": "You couldn't collect enough Cocoa Beans. Your ship sputters."
       },
       "mechanics": {
         "auto_run": false,
         "player_action": "laser_shot",
         "gravity_scale": 1.0,
-        "double_jump": true,
+        "double_jump": false,
         "dark_mode": false,
-        "weather": "rain",
+        "weather": "fog",
         "weather_intensity": 0.6
       },
       "difficulty": "medium"
     },
     {
       "chapter_number": 3,
-      "title": "The Dark Chocolate Core",
-      "setting": "A cavernous, dimly lit core made of rich, dark chocolate and hard candy crystals, with molten fudge rivers and glowing sugar veins. A faint, sweet aroma fills the air.",
-      "narration": "You've reached the planet's heart, a dark chocolate cavern rumored to hold the final, most crucial ship part. But the legendary Jawbreaker Juggernaut guards this sweet treasure.",
+      "title": "Licorice Labyrinth's Core",
+      "setting": "The dark, twisting interior of a licorice planet, illuminated only by glowing rock candy formations and your ship's spotlight. Sharp, spiky licorice stalagmites and stalactites abound.",
+      "narration": "Deep within the Licorice Labyrinth, a dark secret awaits. Navigate the treacherous tunnels and defeat the monstrous Hard Candy King to claim the fabled Sugar Star.",
       "mission": {
         "type": "kill_all",
-        "description": "Defeat the mighty Jawbreaker Juggernaut and its Gummy Grub minions to retrieve the final ship component and escape the candy planet!",
+        "description": "Defeat the formidable Hard Candy King to claim the legendary Sugar Star!",
         "target_count": 1,
-        "success_text": "Victory! The final component is yours. Time to blast off!",
-        "fail_text": "The Juggernaut is too strong! You must find a way to defeat it."
+        "success_text": "The Hard Candy King crumbles, revealing the shimmering Sugar Star!",
+        "fail_text": "The Hard Candy King stands victorious. The Sugar Star remains out of reach."
       },
       "mechanics": {
         "auto_run": false,
         "player_action": "laser_shot",
-        "gravity_scale": 0.9,
+        "gravity_scale": 0.8,
         "double_jump": true,
         "dark_mode": true,
         "spotlight_radius": 150,
-        "weather": "fog",
+        "weather": "embers",
         "weather_intensity": 0.8
       },
       "difficulty": "hard"
     }
   ],
   "characters": {
-    "hero": "A tiny, adorable astronaut in a gleaming white space suit with a large, clear bubble helmet. Their suit has small, colorful candy-shaped patches, giving them a whimsical, innocent look.",
-    "enemy_1": "A wobbly, translucent green Gummy Grub with googly eyes and tiny stubby legs. It leaves a sticky, shimmering trail and makes soft, squishy sounds.",
-    "enemy_2": "A massive, formidable Jawbreaker Juggernaut, made of swirling, rainbow-colored hard candy, with rocky, crystalline fists and a perpetually grumpy, cracked expression. It shimmers menacingly.",
-    "npc": "A wise, ancient Peppermint Elder, a tall, striped candy cane figure with a gentle, glowing aura and a kindly, wrinkled face made of soft mint. It has a long, flowing white beard.",
-    "coin": "Sparkling, iridescent sugar crystals that float and twinkle with soft, pastel light, emitting a faint, sweet chime.",
-    "health": "Bright red, heart-shaped lollipops on a stick, glowing softly with restorative energy.",
-    "key": "An intricate, glowing cogwheel made of spun sugar, slowly rotating and emitting a gentle, sugary scent.",
-    "platform": "Soft, square-cut marshmallow blocks that gently compress when stepped on, or flat, frosted gingerbread tiles decorated with icing.",
-    "breakable": "Blocks of brittle, striped hard candy that shatter into sparkling shards and a puff of sugar dust when hit.",
-    "exit_door": "A shimmering, circular portal made of swirling, multi-colored spun sugar, gently pulsing with an inviting, ethereal light."
+    "hero": "A tiny astronaut in a vibrant, oversized bubble helmet and a puffy, rainbow-striped suit, with small rocket boots.",
+    "enemy_1": "A wobbly, translucent, lime-green gummy blob with two large, googly eyes and a perpetually smiling mouth.",
+    "enemy_2": "A menacing, jagged red and blue hard candy shard creature with a single cyclops eye and two sharp, candy-cane arms.",
+    "npc": "A tall, wise lollipop with a swirling rainbow head, a gentle, smiling face, and a sturdy, wooden stick body.",
+    "coin": "A shiny, golden wrapped candy swirl.",
+    "health": "A sparkling, heart-shaped strawberry hard candy.",
+    "key": "A translucent, multi-faceted sugar crystal key that glows softly.",
+    "platform": "Bouncy, colorful gummy bear blocks and sturdy, striped wafer cookies.",
+    "breakable": "Stacked peppermint candy cane blocks.",
+    "exit_door": "A giant, spherical gumball machine with a clear dome, dispensing small, colorful gumballs."
   }
 }
