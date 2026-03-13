@@ -3,6 +3,7 @@ ADK tool functions for the CreativeDirector pipeline.
 
 These are called by LlmAgents via ToolContext. Each tool reads shared
 session state (story_plan, story_pack) and writes results back.
+SSE events are pushed to the client queue as assets are generated.
 """
 
 import asyncio
@@ -15,6 +16,7 @@ from google.adk.tools import ToolContext
 from services.audio_gen import generate_ambient_music
 from services.image_gen import generate_story_assets
 from services.level_gen import generate_chapter_background, generate_level_json
+from sse import stream_to_client
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +42,10 @@ def _safe_parse_json(raw) -> dict:
         return {}
 
 
+def _asset_url(session_id: str, filepath: str) -> str:
+    return f"/api/assets/{session_id}/{os.path.basename(filepath)}"
+
+
 async def generate_assets(tool_context: ToolContext) -> dict:
     """
     Generate all game sprites and background art for the story.
@@ -55,14 +61,32 @@ async def generate_assets(tool_context: ToolContext) -> dict:
     if not story_plan:
         return {"status": "error", "message": "story_plan missing or invalid in session state"}
 
+    session_id = tool_context.state.get("session_id", "default")
+
+    await stream_to_client(session_id, {
+        "type": "story_plan",
+        "data": story_plan,
+    })
+
     output_dir = _get_output_dir(tool_context)
 
     try:
         assets = await generate_story_assets(story_plan, output_dir)
         tool_context.state["asset_paths"] = json.dumps(assets)
+
+        for role, path in assets.items():
+            await stream_to_client(session_id, {
+                "type": "image",
+                "data": {"role": role, "url": _asset_url(session_id, path)},
+            })
+
         return {"status": "success", "assets": assets}
     except Exception as e:
         logger.error("Asset generation failed: %s", e, exc_info=True)
+        await stream_to_client(session_id, {
+            "type": "error",
+            "data": {"message": f"Asset generation failed: {e}"},
+        })
         return {"status": "error", "message": str(e)}
 
 
@@ -81,6 +105,7 @@ async def generate_chapter_level(chapter_number: int, tool_context: ToolContext)
     """
     story_plan = _safe_parse_json(tool_context.state.get("story_plan", "{}"))
     story_pack = _safe_parse_json(tool_context.state.get("story_pack", "{}"))
+    session_id = tool_context.state.get("session_id", "default")
 
     chapters = story_plan.get("chapters", [])
     chapter = None
@@ -122,15 +147,35 @@ async def generate_chapter_level(chapter_number: int, tool_context: ToolContext)
         result["level_json"] = level_json
         result["level_path"] = level_path
 
+    bg_url = None
     if isinstance(bg_path, Exception):
         logger.error("Background failed for ch%d: %s", chapter_number, bg_path)
-        result["background_url"] = None
     else:
+        bg_url = _asset_url(session_id, bg_path)
         result["background_url"] = bg_path
 
+    music_url = None
     if isinstance(music_result, Exception) or music_result is None:
         result["music_url"] = None
     else:
+        music_url = _asset_url(session_id, music_result)
         result["music_url"] = music_result
+
+    if not isinstance(level_json, Exception):
+        await stream_to_client(session_id, {
+            "type": "level_ready",
+            "data": {
+                "chapter_number": chapter_number,
+                "level_json": level_json,
+                "background_url": bg_url,
+                "music_url": music_url,
+            },
+        })
+
+    if music_url:
+        await stream_to_client(session_id, {
+            "type": "audio",
+            "data": {"role": f"ch{chapter_number:02d}_ambient", "url": music_url},
+        })
 
     return result
