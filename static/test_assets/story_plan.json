@@ -1,22 +1,22 @@
 {
-  "story_id": "candy-cosmos-quest",
-  "title": "The Candy Cosmos Quest",
-  "premise": "A pint-sized space explorer ventures across a universe made of sweets, seeking to uncover the legendary Sugar Star.",
-  "art_style": "chalk",
+  "story_id": "candy-planet-explorer",
+  "title": "The Sweetest Journey",
+  "premise": "A tiny astronaut embarks on an intergalactic adventure, exploring vibrant candy planets and facing sugary challenges.",
+  "art_style": "flat_vector",
   "mood": "whimsical_wonder",
-  "sound_pack": "retro",
+  "sound_pack": "sci_fi",
   "chapters": [
     {
       "chapter_number": 1,
-      "title": "Gummy Grove Galaxy",
-      "setting": "A vibrant planet where trees are lollipops, rivers flow with lemonade, and the ground is soft, spongy gummy. Bright, pastel colors dominate the landscape.",
-      "narration": "You arrive at Gummy Grove, a planet bursting with sweet scents and bouncy terrain. Your mission is clear: find the Sugar Crystal Key to unlock the path forward.",
+      "title": "Lollypop Landing",
+      "setting": "A vibrant landscape of giant lollipops, swirling taffy rivers, and soft marshmallow clouds under a pastel sky. Everything glistens with sugary delight.",
+      "narration": "You arrive on a planet made entirely of candy, its surface glistening with sugary delight. Your mission is to explore and find a path forward.",
       "mission": {
-        "type": "find_key_exit",
-        "description": "Find the glistening Sugar Crystal Key to unlock the next area!",
+        "type": "reach_exit",
+        "description": "Navigate the sweet terrain and find the giant gumball machine exit!",
         "target_count": 1,
-        "success_text": "The Sugar Crystal Key hums, opening the way to new sugary adventures!",
-        "fail_text": "You couldn't find the key. The path remains locked."
+        "success_text": "You've successfully navigated the Lollypop Landing!",
+        "fail_text": "The sugary landscape proved too tricky. Try again!"
       },
       "mechanics": {
         "auto_run": false,
@@ -24,45 +24,45 @@
         "gravity_scale": 1.0,
         "double_jump": false,
         "dark_mode": false,
-        "weather": "embers",
-        "weather_intensity": 0.4
+        "weather": "none",
+        "weather_intensity": 0.3
       },
       "difficulty": "easy"
     },
     {
       "chapter_number": 2,
-      "title": "Chocolate Crater Challenge",
-      "setting": "A rugged planet with dark chocolate craters, molten caramel rivers, and treacherous nougat cliffs. Steam rises from hot fudge geysers, creating a thick, sweet mist.",
-      "narration": "You land on the perilous Chocolate Crater, a world filled with delicious dangers. Collect rare Cocoa Beans to power your ship and escape the sticky traps.",
+      "title": "Gummy Jungle Expedition",
+      "setting": "A dense jungle of towering gummy bear trees, intertwined licorice vines, and chocolate rivers, with a faint sparkling sugar dust hanging in the air.",
+      "narration": "Deeper into the candy world, you find a vibrant jungle teeming with strange, sweet life. You must gather rare candy samples for your research.",
       "mission": {
         "type": "collect_all",
-        "description": "Collect all 5 rare Cocoa Beans to refuel your ship!",
+        "description": "Collect 5 rare gummy fruits scattered throughout the jungle!",
         "target_count": 5,
-        "success_text": "With the Cocoa Beans collected, your ship hums with renewed energy!",
-        "fail_text": "You couldn't collect enough Cocoa Beans. Your ship sputters."
+        "success_text": "You've gathered all the precious gummy fruits!",
+        "fail_text": "Some gummy fruits remain elusive. Don't give up!"
       },
       "mechanics": {
         "auto_run": false,
         "player_action": "laser_shot",
         "gravity_scale": 1.0,
-        "double_jump": false,
+        "double_jump": true,
         "dark_mode": false,
-        "weather": "fog",
-        "weather_intensity": 0.6
+        "weather": "embers",
+        "weather_intensity": 0.5
       },
       "difficulty": "medium"
     },
     {
       "chapter_number": 3,
-      "title": "Licorice Labyrinth's Core",
-      "setting": "The dark, twisting interior of a licorice planet, illuminated only by glowing rock candy formations and your ship's spotlight. Sharp, spiky licorice stalagmites and stalactites abound.",
-      "narration": "Deep within the Licorice Labyrinth, a dark secret awaits. Navigate the treacherous tunnels and defeat the monstrous Hard Candy King to claim the fabled Sugar Star.",
+      "title": "The Sour Starship Escape",
+      "setting": "A dark, cavernous interior of a giant, sour-candy-themed alien starship, dimly lit by the glow of your helmet and flickering neon sweet lights. A sour crystal storm rages outside.",
+      "narration": "You've accidentally stumbled upon a sour alien starship, home to mischievous candy creatures! You must clear the path and escape before its sugary defenses overwhelm you.",
       "mission": {
         "type": "kill_all",
-        "description": "Defeat the formidable Hard Candy King to claim the legendary Sugar Star!",
-        "target_count": 1,
-        "success_text": "The Hard Candy King crumbles, revealing the shimmering Sugar Star!",
-        "fail_text": "The Hard Candy King stands victorious. The Sugar Star remains out of reach."
+        "description": "Defeat all 7 Sour Sentinels to clear your escape route!",
+        "target_count": 7,
+        "success_text": "You've neutralized the sour threat and escaped the starship!",
+        "fail_text": "The Sour Sentinels have overwhelmed you. Prepare for another attempt!"
       },
       "mechanics": {
         "auto_run": false,
@@ -71,22 +71,22 @@
         "double_jump": true,
         "dark_mode": true,
         "spotlight_radius": 150,
-        "weather": "embers",
+        "weather": "snow",
         "weather_intensity": 0.8
       },
       "difficulty": "hard"
     }
   ],
   "characters": {
-    "hero": "A tiny astronaut in a vibrant, oversized bubble helmet and a puffy, rainbow-striped suit, with small rocket boots.",
-    "enemy_1": "A wobbly, translucent, lime-green gummy blob with two large, googly eyes and a perpetually smiling mouth.",
-    "enemy_2": "A menacing, jagged red and blue hard candy shard creature with a single cyclops eye and two sharp, candy-cane arms.",
-    "npc": "A tall, wise lollipop with a swirling rainbow head, a gentle, smiling face, and a sturdy, wooden stick body.",
-    "coin": "A shiny, golden wrapped candy swirl.",
-    "health": "A sparkling, heart-shaped strawberry hard candy.",
-    "key": "A translucent, multi-faceted sugar crystal key that glows softly.",
-    "platform": "Bouncy, colorful gummy bear blocks and sturdy, striped wafer cookies.",
-    "breakable": "Stacked peppermint candy cane blocks.",
-    "exit_door": "A giant, spherical gumball machine with a clear dome, dispensing small, colorful gumballs."
+    "hero": "A tiny, brave astronaut in a sleek, white-and-orange spacesuit with a round, clear helmet. They carry a small, toy-like laser pistol.",
+    "enemy_1": "A wobbly, brightly colored gummy bear with mischievous, beady eyes and a slightly menacing grin, made of translucent candy.",
+    "enemy_2": "An angular, purple and green crystal creature made of sour candy, with sharp, jagged edges and glowing, acidic-green eyes.",
+    "npc": "A benevolent, portly figure with a crown made of glistening hard candy, a shimmering robe woven from spun sugar, and a friendly, welcoming smile.",
+    "coin": "A golden coin with a swirl design, resembling a wrapped piece of hard candy.",
+    "health": "A glowing, heart-shaped lollipop with a vibrant red center.",
+    "key": "A shiny, oversized chocolate bar, intricately molded with a decorative pattern.",
+    "platform": "Thick, fluffy waffle cones, golden-brown and slightly textured, or layered nougat squares.",
+    "breakable": "Blocks of brittle gingerbread or sparkling rock candy that appear to shatter easily.",
+    "exit_door": "A giant, transparent gumball machine filled with colorful gumballs, with a small opening at the bottom acting as the exit portal."
   }
 }

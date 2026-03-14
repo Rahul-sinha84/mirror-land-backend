@@ -1,21 +1,21 @@
 """
 Image generation service using Gemini interleaved output (TEXT + IMAGE).
 
-Generates 5 game assets in a single Gemini call:
+Generates 5 game assets via 5 parallel Gemini calls (one per asset):
   - character  (hero sprite, white bg, 1024x1024)
   - enemy_1    (enemy sprite, white bg, 1024x1024)
   - platform   (tile sprite, white bg, 1024x1024)
   - npc        (NPC sprite, white bg, 1024x1024)
   - background (full scene, 1920x1080, no cleanup)
 
-Uses [ASSET: role_name] labels in the prompt so the backend can identify each image.
+Each call uses [ASSET: role_name] in the prompt. Isolated calls avoid first-in-batch compositing.
 Sprites use solid white #FFFFFF background for reliable rembg cleanup.
 """
 
+import asyncio
 import io
 import logging
 import os
-import re
 
 from PIL import Image
 from google.genai import types
@@ -51,12 +51,15 @@ ART_STYLE_DESCRIPTIONS = {
 }
 
 SPRITE_CONSTRAINTS = """\
+ONLY one single character, no other characters or creatures or objects in the image, \
+The character's body/clothing must NOT be white or near-white — use vibrant saturated colors so it contrasts with the white background, \
 side profile strictly facing right, full body visible, centered, \
 solid opaque body, simple round compact silhouette, minimal detail, \
 no thin strands/particles/fog, \
 solid flat white #FFFFFF background edge-to-edge, 1024x1024, game sprite."""
 
 PLATFORM_CONSTRAINTS = """\
+The platform must NOT be white or near-white — use vibrant saturated colors so it contrasts with the white background, \
 side view with clear top surface, simple readable shape, tileable horizontally, \
 solid opaque, solid flat white #FFFFFF background edge-to-edge, 1024x1024, game sprite."""
 
@@ -72,42 +75,53 @@ def _derive_theme_name(story_plan: dict) -> str:
     return title.lower()
 
 
-def _build_asset_prompt(story_plan: dict) -> str:
-    """Build the interleaved generation prompt with [ASSET: role] labels."""
+# Role -> (characters key, intro line, constraints)
+_SPRITE_CONFIG = {
+    "character": ("hero", "3D mascot cartoon hero sprite for 2D platformer", SPRITE_CONSTRAINTS),
+    "enemy_1": ("enemy_1", "3D mascot cartoon enemy sprite for 2D platformer", SPRITE_CONSTRAINTS),
+    "npc": ("npc", "3D mascot cartoon NPC sprite for 2D platformer", SPRITE_CONSTRAINTS),
+    "platform": ("platform", "3D mascot platform tile for 2D platformer", PLATFORM_CONSTRAINTS),
+}
+
+DEFAULT_DESCRIPTIONS = {
+    "hero": "a brave hero character",
+    "enemy_1": "a menacing enemy creature",
+    "npc": "a friendly guide character",
+    "platform": "stone platform blocks",
+}
+
+
+def _build_sprite_prompt(story_plan: dict, role: str) -> str:
+    """Build a standalone prompt for a single sprite (character, enemy_1, npc, or platform)."""
+    if role not in _SPRITE_CONFIG:
+        raise ValueError(f"Unknown sprite role: {role}")
+    char_key, intro, constraints = _SPRITE_CONFIG[role]
     art_style = story_plan.get("art_style", "retro_pixel")
     style_name = ART_STYLE_NAMES.get(art_style, f"{art_style} art")
     characters = story_plan.get("characters", {})
-    ch1_setting = story_plan.get("chapters", [{}])[0].get("setting", "a game world")
     theme = _derive_theme_name(story_plan)
-
+    description = characters.get(char_key, DEFAULT_DESCRIPTIONS.get(char_key, ""))
     return f"""\
-{style_name} style: clean lines, simple shapes, minimal objects. White background (#FFFFFF) for sprites. Generate at 1024x1024 for sprites.
+{style_name} style: clean lines, simple shapes, minimal objects. White background (#FFFFFF) for sprites. Generate at 1024x1024.
 
-Generate the following 5 assets in this EXACT order.
-Before each image, write the label on its own line: [ASSET: role_name]
-After writing each label, generate the image immediately.
+Generate exactly one image:
 
-1. [ASSET: character]
-3D mascot cartoon hero character for 2D platformer, \
-{characters.get("hero", "a brave hero character")}, \
-{theme} theme, {style_name} style, {SPRITE_CONSTRAINTS}
+[ASSET: {role}]
+{intro}, {description}, {theme} theme, {style_name} style, {constraints}
+"""
 
-2. [ASSET: enemy_1]
-3D mascot cartoon enemy sprite for 2D platformer, \
-{characters.get("enemy_1", "a menacing enemy creature")}, \
-{theme} theme, {style_name} style, {SPRITE_CONSTRAINTS}
 
-3. [ASSET: platform]
-3D mascot platform tile for 2D platformer, \
-{characters.get("platform", "stone platform blocks")}, \
-{theme} theme, {style_name} style, {PLATFORM_CONSTRAINTS}
+def _build_background_prompt(story_plan: dict) -> str:
+    """Build a standalone prompt for the background image."""
+    art_style = story_plan.get("art_style", "retro_pixel")
+    style_name = ART_STYLE_NAMES.get(art_style, f"{art_style} art")
+    ch1_setting = story_plan.get("chapters", [{}])[0].get("setting", "a game world")
+    return f"""\
+{style_name} style: clean lines, simple shapes, minimal objects.
 
-4. [ASSET: npc]
-3D mascot cartoon NPC sprite for 2D platformer, \
-{characters.get("npc", "a friendly guide character")}, \
-{theme} theme, {style_name} style, {SPRITE_CONSTRAINTS}
+Generate exactly one image:
 
-5. [ASSET: background]
+[ASSET: background]
 Wide 2D side-scrolling game background, 1920x1080. Minimalist {style_name}, clean lines, simple shapes. \
 {ch1_setting}. \
 Top 20–30%: decorative elements only (sky, distant shapes, 2–4 simple objects). \
@@ -119,32 +133,14 @@ No characters, no UI, no text.
 """
 
 
-def _parse_response_parts(response) -> dict[str, bytes]:
-    """Parse interleaved response parts, matching [ASSET: role] labels to images."""
-    assets: dict[str, bytes] = {}
-    current_role: str | None = None
-    asset_pattern = re.compile(r"\[ASSET:\s*(\w+)\]")
-    image_index = 0
-
-    ordered_roles = ["character", "enemy_1", "platform", "npc", "background"]
-
+def _extract_single_image(response, role: str) -> bytes | None:
+    """Extract the first image from an interleaved response (single-asset call)."""
+    if not response.candidates:
+        return None
     for part in response.candidates[0].content.parts:
-        if part.text:
-            match = asset_pattern.search(part.text)
-            if match:
-                current_role = match.group(1)
-        elif part.inline_data:
-            role = current_role or (
-                ordered_roles[image_index]
-                if image_index < len(ordered_roles)
-                else f"unknown_{image_index}"
-            )
-            assets[role] = part.inline_data.data
-            logger.info("Captured image for role: %s (%d bytes)", role, len(part.inline_data.data))
-            current_role = None
-            image_index += 1
-
-    return assets
+        if part.inline_data:
+            return part.inline_data.data
+    return None
 
 
 async def generate_story_assets(
@@ -152,7 +148,7 @@ async def generate_story_assets(
     output_dir: str,
 ) -> dict[str, str]:
     """
-    Generate 5 game assets via Gemini interleaved output.
+    Generate 5 game assets via 5 parallel Gemini calls (one per asset).
 
     Returns a dict mapping role -> saved file path.
     Sprites (character, enemy_1, platform, npc) have backgrounds removed.
@@ -160,19 +156,38 @@ async def generate_story_assets(
     """
     os.makedirs(output_dir, exist_ok=True)
     client = get_client()
-    prompt = _build_asset_prompt(story_plan)
-
-    logger.info("Generating assets with model %s...", IMAGE_MODEL)
-    response = await client.aio.models.generate_content(
-        model=IMAGE_MODEL,
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            response_modalities=["TEXT", "IMAGE"],
-            temperature=1.0,
-        ),
+    gen_config = types.GenerateContentConfig(
+        response_modalities=["TEXT", "IMAGE"],
+        temperature=1.0,
     )
 
-    raw_assets = _parse_response_parts(response)
+    sprite_roles = ["character", "enemy_1", "platform", "npc"]
+    prompts = (
+        [_build_sprite_prompt(story_plan, r) for r in sprite_roles]
+        + [_build_background_prompt(story_plan)]
+    )
+    roles = sprite_roles + ["background"]
+
+    logger.info("Generating 5 assets in parallel with model %s...", IMAGE_MODEL)
+    responses = await asyncio.gather(
+        *[
+            client.aio.models.generate_content(
+                model=IMAGE_MODEL,
+                contents=prompt,
+                config=gen_config,
+            )
+            for prompt in prompts
+        ]
+    )
+
+    raw_assets: dict[str, bytes] = {}
+    for role, response in zip(roles, responses):
+        data = _extract_single_image(response, role)
+        if data:
+            raw_assets[role] = data
+            logger.info("Captured image for role: %s (%d bytes)", role, len(data))
+        else:
+            logger.warning("No image in response for role: %s", role)
 
     if not raw_assets:
         raise RuntimeError("Gemini returned no images. Response may have been filtered.")
