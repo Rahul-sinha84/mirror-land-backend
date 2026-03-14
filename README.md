@@ -65,7 +65,7 @@ graph TD
 
 ### Key Design Decisions
 
-- **5 parallel Gemini calls** for sprites (not 1 batched call) — prevents first-in-batch scene compositing
+- **5 parallel Gemini calls** for sprites — prevents first-in-batch scene compositing
 - **rembg** for background removal — sprites generated on white `#FFFFFF`, AI constrained to use vibrant non-white colors
 - **Level validator** — 9 automated checks + auto-fixes guarantee playable levels from imperfect AI output
 - **Chapter pre-fetching** — chapters 2/3 generate in background while player plays chapter 1
