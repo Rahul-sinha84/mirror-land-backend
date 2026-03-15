@@ -4,7 +4,7 @@
 
 **Hackathon Category:** Creative Storyteller — Multimodal Storytelling with Interleaved Output
 
-**Live URL:** https://playable-storybook-rb454rmsjq-uc.a.run.app
+Deploy to Cloud Run to get a live backend URL. See [Deploy to Google Cloud Run](#deploy-to-google-cloud-run) below.
 
 ---
 
