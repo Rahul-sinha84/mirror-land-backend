@@ -25,6 +25,7 @@ from services.sprite_cleaner import remove_background
 
 logger = logging.getLogger(__name__)
 
+IMAGE_SEMAPHORE = asyncio.Semaphore(3)
 IMAGE_MODEL = "gemini-2.5-flash-image"
 SPRITE_ROLES = {"character", "enemy_1", "platform", "npc"}
 ALL_ROLES = {"character", "enemy_1", "platform", "npc", "background"}
@@ -185,26 +186,30 @@ async def generate_story_assets(
     )
     roles = sprite_roles + ["background"]
 
-    logger.info("Generating 5 assets in parallel with model %s...", IMAGE_MODEL)
-    responses = await asyncio.gather(
-        *[
-            client.aio.models.generate_content(
+    async def generate_with_limit(prompt):
+        async with IMAGE_SEMAPHORE:
+            return await client.aio.models.generate_content(
                 model=IMAGE_MODEL,
                 contents=prompt,
                 config=gen_config,
             )
-            for prompt in prompts
-        ]
-    )
+
+    logger.info("Generating 5 assets in parallel with model %s...", IMAGE_MODEL)
+    tasks = [generate_with_limit(p) for p in prompts]
+    responses = await asyncio.gather(*tasks)
 
     raw_assets: dict[str, bytes] = {}
-    for role, response in zip(roles, responses):
+    for idx, (role, response) in enumerate(zip(roles, responses)):
         data = _extract_single_image(response, role)
+        if not data:
+            logger.warning("No image for %s, retrying once...", role)
+            retry_resp = await generate_with_limit(prompts[idx])
+            data = _extract_single_image(retry_resp, role)
         if data:
             raw_assets[role] = data
             logger.info("Captured image for role: %s (%d bytes)", role, len(data))
         else:
-            logger.warning("No image in response for role: %s", role)
+            logger.warning("No image for role: %s (retry also failed)", role)
 
     if not raw_assets:
         raise RuntimeError("Gemini returned no images. Response may have been filtered.")
