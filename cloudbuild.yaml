@@ -1,0 +1,40 @@
+# Cloud Build configuration for automated deployment to Cloud Run.
+# Triggered on push to GitHub. Builds Docker image, pushes to Artifact Registry,
+# and deploys to Cloud Run.
+#
+# Substitution variables (set in trigger or use defaults):
+#   _SERVICE_NAME - Cloud Run service name
+#   _REGION       - GCP region (e.g. us-central1)
+#   _REPOSITORY   - Artifact Registry repository
+#   _IMAGE        - Image name
+#   PROJECT_ID, SHORT_SHA - Provided by Cloud Build
+
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE}:${SHORT_SHA}', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE}:${SHORT_SHA}']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - '${_SERVICE_NAME}'
+      - '--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE}:${SHORT_SHA}'
+      - '--region=${_REGION}'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--memory=2Gi'
+      - '--cpu=2'
+      - '--timeout=300'
+
+images:
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_IMAGE}:${SHORT_SHA}'
+
+substitutions:
+  _SERVICE_NAME: 'playable-storybook'
+  _REGION: 'us-central1'
+  _REPOSITORY: 'cloud-run-source-deploy'
+  _IMAGE: 'mirror-land-backend'

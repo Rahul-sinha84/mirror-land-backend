@@ -191,12 +191,27 @@ python tests/test_adk_pipeline.py
 
 ## Deploy to Google Cloud Run
 
+### Automated Deployment
+
+Deployment is automated via infrastructure-as-code and scripts:
+
+- **[cloudbuild.yaml](cloudbuild.yaml)** — Cloud Build configuration. When a Cloud Build trigger fires on push to GitHub, it builds the Docker image, pushes to Artifact Registry, and deploys to Cloud Run.
+- **[deploy.sh](deploy.sh)** — Manual deployment script. Runs `gcloud run deploy --source .` for local or CI use.
+
+For hackathon submission, link to [cloudbuild.yaml](cloudbuild.yaml) or [deploy.sh](deploy.sh) as proof of automated deployment.
+
 ### Prerequisites
 
 - `gcloud` CLI installed and authenticated
 - A GCP project with Cloud Run enabled
 
 ### Deploy
+
+**Option A: Automated (Cloud Build trigger on push)**
+
+Configure a Cloud Build trigger in GCP Console to use `cloudbuild.yaml` on push to your branch. Each push will build and deploy automatically.
+
+**Option B: Manual**
 
 ```bash
 # Ensure .env has GOOGLE_API_KEY and GOOGLE_CLOUD_PROJECT
@@ -237,8 +252,9 @@ This builds the Docker image, deploys to Cloud Run (2Gi RAM, 2 CPU, 300s timeout
 │   └── story_planner.py     # Story plan generation (standalone)
 ├── tests/                   # Per-service test scripts
 ├── static/assets/           # Generated assets (per session)
-├── deploy.sh                # Cloud Run deployment script
-├── Dockerfile               # Python 3.12-slim + rembg deps
+├── cloudbuild.yaml         # Cloud Build config (automated deploy on push)
+├── deploy.sh               # Manual Cloud Run deployment script
+├── Dockerfile              # Python 3.12-slim + rembg deps
 └── requirements.txt
 ```
 
@@ -274,4 +290,4 @@ This builds the Docker image, deploys to Cloud Run (2Gi RAM, 2 CPU, 300s timeout
 - **Gemini API** — Story planning, image generation, level design (via Google AI Studio key)
 - **Vertex AI** — Lyria music generation (ambient loops per chapter)
 - **Cloud Run** — Serverless deployment with auto-scaling (0-3 instances)
-- **Cloud Build** — Docker image building (triggered by `gcloud run deploy --source .`)
+- **Cloud Build** — Automated build and deploy on push (see [cloudbuild.yaml](cloudbuild.yaml))
