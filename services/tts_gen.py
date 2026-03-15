@@ -36,6 +36,13 @@ LANGUAGE_NAMES = {
 
 SUPPORTED_LANGUAGES = set(LANGUAGE_NAMES.keys())
 
+# Mood -> Gemini TTS voice (from https://ai.google.dev/gemini-api/docs/speech-generation#voices)
+MOOD_TO_VOICE = {
+    "whimsical_wonder": "Leda",      # Youthful
+    "dark_tension": "Gacrux",        # Mature
+    "adventure_mystery": "Sulafat",  # Warm
+}
+
 
 def _write_wav(output_path: str, pcm: bytes) -> None:
     """Write PCM data to WAV file (24kHz, mono, s16le)."""
@@ -68,10 +75,12 @@ async def generate_npc_dialogue_audio(
     if language != lang:
         logger.warning("Language %s not supported, falling back to en", language)
 
+    voice_name = MOOD_TO_VOICE.get(mood, DEFAULT_VOICE)
+    mood_desc = (mood or "").replace("_", " ")
     lang_name = LANGUAGE_NAMES.get(lang, "English")
     prompt = (
         f"Speak the following {lang_name} dialogue naturally, warmly and clearly, "
-        f"like a {mood} game character:\n{text}"
+        f"like a {mood_desc} game character:\n{text}"
     )
 
     try:
@@ -84,7 +93,7 @@ async def generate_npc_dialogue_audio(
                 speech_config=types.SpeechConfig(
                     voice_config=types.VoiceConfig(
                         prebuilt_voice_config=types.PrebuiltVoiceConfig(
-                            voice_name=DEFAULT_VOICE,
+                            voice_name=voice_name,
                         )
                     )
                 ),
