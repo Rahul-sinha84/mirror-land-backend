@@ -39,7 +39,7 @@ graph TD
 
     subgraph adk [ADK Pipeline]
         CD --> SP["StoryPlanner<br/>gemini-2.5-flash<br/>Story plan JSON"]
-        SP --> SA["StoryArchitect<br/>5 parallel Gemini calls<br/>character, enemy, platform, NPC, background"]
+        SP --> SA["StoryArchitect<br/>gemini-2.5-flash-image<br/>character, enemy, platform, NPC, background"]
         SA --> LB["LevelBuilder<br/>Level JSON + background + music<br/>(3 parallel tasks per chapter)"]
     end
 
@@ -56,20 +56,35 @@ graph TD
     Prefetch --> NextCh["POST /api/next-chapter"]
 ```
 
+### Creative Director
+
+**Creative Director** is the top-level SequentialAgent that orchestrates the full pipeline. It does not call the LLM itself — it runs three sub-agents in order and passes session state between them. Each sub-agent writes its output (e.g. `story_plan`, `story_pack`, `level_data`) for the next to consume.
+
 ### Agent Pipeline
 
 | Agent | Model | Output | Time |
 |-------|-------|--------|------|
 | **StoryPlanner** | `gemini-2.5-flash` | Story plan JSON (title, 3 chapters, characters, mechanics) | ~2-3s |
-| **StoryArchitect** | `gemini-2.5-flash` | 5 game assets via `generate_assets` tool | ~15-25s |
-| **LevelBuilder** | `gemini-2.5-flash` | Level JSON + background + music via `generate_chapter_level` tool | ~8-10s |
+| **StoryArchitect** | `gemini-2.5-flash-image` | 5 game assets via `generate_assets` tool | ~15-25s |
+| **LevelBuilder** | `gemini-2.5-flash` + `gemini-2.5-flash-image` + Lyria + TTS | Level JSON, chapter backgrounds, ambient music, NPC voice | ~8-10s per chapter |
+
+### Google Models Used
+
+| Model | API | Purpose |
+|-------|-----|---------|
+| `gemini-2.5-flash` | Gemini API | Story planning, agent orchestration, level JSON |
+| `gemini-2.5-flash-image` | Gemini API | Sprites (5 assets), chapter backgrounds |
+| `gemini-2.5-flash-preview-tts` | Gemini API | NPC dialogue audio |
+| `lyria-002` | Vertex AI | Ambient music per chapter |
 
 ### Key Design Decisions
 
-- **5 parallel Gemini calls** for sprites — prevents first-in-batch scene compositing
-- **rembg** for background removal — sprites generated on white `#FFFFFF`, AI constrained to use vibrant non-white colors
-- **Level validator** — 9 automated checks + auto-fixes guarantee playable levels from imperfect AI output
-- **Chapter pre-fetching** — chapters 2/3 generate in background while player plays chapter 1
+- **Data-driven engine** — The frontend has a fixed set of mechanics (gravity, jump, combat, missions). The agent chooses which to use per story (e.g. space → low gravity + laser; fairy → double jump + fog).
+- **5 parallel Gemini calls** for sprites — prevents first-in-batch scene compositing; semaphore limits concurrency to 3.
+- **rembg + Pillow** for sprites — Sprites generated on white `#FFFFFF` background so rembg (U2Net) can segment and remove it. Pillow then alpha-threshold crops to trim transparent padding.
+- **Background tiling** — Chapter backgrounds are prompted with "seamless horizontal tile for parallax" so they can be tiled for infinite parallax scroll without visible seams.
+- **Level validator** — 9 automated checks + auto-fixes guarantee playable levels from imperfect AI output.
+- **Chapter pre-fetching** — chapters 2/3 generate in background while player plays chapter 1.
 
 ---
 
@@ -229,15 +244,26 @@ This builds the Docker image, deploys to Cloud Run (2Gi RAM, 2 CPU, 300s timeout
 
 ---
 
+## Request Flow
+
+1. **User enters prompt** → `POST /api/create-story` → SSE stream starts
+2. **Backend** (hosted on Google Cloud Run) runs the ADK agent in-process
+3. **Creative Director** orchestrates StoryPlanner → StoryArchitect → LevelBuilder
+4. **Tools** push events to the SSE queue; frontend receives them in real time
+5. **User advances chapter** → `POST /api/next-chapter` (returns cached or generates on demand)
+6. **Assets** (images, audio) → `GET /api/assets/{session_id}/{filename}`
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
 | AI Agents | Google ADK (SequentialAgent, LlmAgent, tools) |
-| AI Models | Gemini 2.5 Flash (text, image), Lyria (audio) |
+| AI Models | Gemini 2.5 Flash (text), Gemini 2.5 Flash Image (sprites, backgrounds), Gemini TTS (NPC voice), Lyria (ambient music) |
 | Backend | Python + FastAPI |
 | Streaming | SSE (Server-Sent Events) |
-| Sprite Cleanup | rembg (U2Net ONNX) + Pillow |
+| Sprite Cleanup | rembg (U2Net ONNX) + Pillow (alpha-threshold crop) |
 | Deploy | Google Cloud Run |
 | Container | Docker (Python 3.12-slim) |
 
