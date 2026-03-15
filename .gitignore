@@ -9,3 +9,4 @@ build/
 .venv/
 venv/
 static/assets/
+static/test_assets/
