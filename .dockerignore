@@ -1,0 +1,8 @@
+.git
+.cursor
+__pycache__
+*.pyc
+node_modules
+.env
+static/assets/
+static/test_assets/
