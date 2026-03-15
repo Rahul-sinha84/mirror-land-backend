@@ -4,6 +4,11 @@
 
 **Hackathon Category:** Creative Storyteller — Multimodal Storytelling with Interleaved Output
 
+| | Link |
+|---|------|
+| **Live App** | [https://mirror-land-gilt.vercel.app/](https://mirror-land-gilt.vercel.app/) |
+| **Frontend Repo** | [https://github.com/rajrawat37/mirror-land](https://github.com/rajrawat37/mirror-land) |
+
 Deploy to Cloud Run to get a live backend URL. See [Deploy to Google Cloud Run](#deploy-to-google-cloud-run) below.
 
 ---
@@ -200,7 +205,9 @@ Deployment is automated via infrastructure-as-code and scripts:
 - **[cloudbuild.yaml](cloudbuild.yaml)** — Cloud Build configuration. When a Cloud Build trigger fires on push to GitHub, it builds the Docker image, pushes to Artifact Registry, and deploys to Cloud Run.
 - **[deploy.sh](deploy.sh)** — Manual deployment script. Runs `gcloud run deploy --source .` for local or CI use.
 
-For hackathon submission, link to [cloudbuild.yaml](cloudbuild.yaml) or [deploy.sh](deploy.sh) as proof of automated deployment.
+**Proof of cloud deployment (hackathon):**
+- **Live app:** [https://mirror-land-gilt.vercel.app/](https://mirror-land-gilt.vercel.app/)
+- **Cloud Build CI/CD:** [cloudbuild.yaml](https://github.com/Rahul-sinha84/mirror-land-backend/blob/main/cloudbuild.yaml)
 
 ### Prerequisites
 
