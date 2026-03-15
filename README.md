@@ -32,6 +32,8 @@ Everything streams to the frontend in real-time via SSE.
 
 ## Architecture
 
+![AI Architecture](AI-Architecture.jpeg)
+
 ```mermaid
 graph TD
     User["User Prompt"] --> API["POST /api/create-story"]
