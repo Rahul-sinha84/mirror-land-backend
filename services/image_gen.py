@@ -134,13 +134,30 @@ No characters, no UI, no text.
 
 
 def _extract_single_image(response, role: str) -> bytes | None:
-    """Extract the first image from an interleaved response (single-asset call)."""
+    """Extract the first image from an interleaved response."""
     if not response.candidates:
         return None
-    for part in response.candidates[0].content.parts:
+
+    candidate = response.candidates[0]
+    content = candidate.content
+
+    if not content or not content.parts:
+        return None
+
+    for part in content.parts:
         if part.inline_data:
             return part.inline_data.data
+
     return None
+
+
+def _process_background(image_data: bytes) -> Image.Image:
+    """Process background image: open, convert RGB, resize to BACKGROUND_SIZE if needed."""
+    cleaned = Image.open(io.BytesIO(image_data)).convert("RGB")
+    if cleaned.size != BACKGROUND_SIZE:
+        cleaned = cleaned.resize(BACKGROUND_SIZE, Image.Resampling.LANCZOS)
+        logger.info("Resized background to %s", BACKGROUND_SIZE)
+    return cleaned
 
 
 async def generate_story_assets(
@@ -193,19 +210,27 @@ async def generate_story_assets(
         raise RuntimeError("Gemini returned no images. Response may have been filtered.")
 
     saved: dict[str, str] = {}
+    tasks = []
+    task_roles = []
     for role, image_data in raw_assets.items():
         if role in SPRITE_ROLES:
-            cleaned = remove_background(image_data)
-        else:
-            cleaned = Image.open(io.BytesIO(image_data)).convert("RGB")
-            if cleaned.size != BACKGROUND_SIZE:
-                cleaned = cleaned.resize(BACKGROUND_SIZE, Image.Resampling.LANCZOS)
-                logger.info("Resized background to %s", BACKGROUND_SIZE)
+            tasks.append(asyncio.to_thread(remove_background, image_data))
+            task_roles.append(role)
+    if "background" in raw_assets:
+        tasks.append(asyncio.to_thread(_process_background, raw_assets["background"]))
+        task_roles.append("background")
 
-        out_path = os.path.join(output_dir, f"{role}.png")
-        cleaned.save(out_path, "PNG")
-        saved[role] = out_path
-        logger.info("Saved %s -> %s (%dx%d)", role, out_path, cleaned.width, cleaned.height)
+    if tasks:
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        for r in results:
+            if isinstance(r, Exception):
+                raise r
+        assert len(task_roles) == len(results)
+        for role, cleaned in zip(task_roles, results):
+            out_path = os.path.join(output_dir, f"{role}.png")
+            cleaned.save(out_path, "PNG")
+            saved[role] = out_path
+            logger.info("Saved %s -> %s (%dx%d)", role, out_path, cleaned.width, cleaned.height)
 
     missing = ALL_ROLES - set(saved.keys())
     if missing:

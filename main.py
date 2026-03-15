@@ -37,6 +37,7 @@ logger = logging.getLogger(__name__)
 APP_NAME = "mirror_land"
 ASSETS_DIR = os.path.join("static", "assets")
 PIPELINE_TIMEOUT = 600  # 10 minutes
+NEXT_CHAPTER_TIMEOUT = 120  # 2 minutes for on-demand chapter generation
 
 os.makedirs(ASSETS_DIR, exist_ok=True)
 
@@ -266,9 +267,18 @@ async def next_chapter(request: Request):
             content={"error": "Story plan not available. Pipeline may still be running."},
         )
 
-    result = await prefetch_chapter_level(
-        chapter_number, session_id, story_plan, story_pack,
-    )
+    try:
+        result = await asyncio.wait_for(
+            prefetch_chapter_level(
+                chapter_number, session_id, story_plan, story_pack,
+            ),
+            timeout=NEXT_CHAPTER_TIMEOUT,
+        )
+    except asyncio.TimeoutError:
+        return JSONResponse(
+            status_code=504,
+            content={"error": "Chapter generation timed out"},
+        )
 
     if result.get("status") == "error":
         return JSONResponse(status_code=500, content=result)
