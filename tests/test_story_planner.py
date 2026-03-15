@@ -23,6 +23,7 @@ VALID_PLAYER_ACTIONS = {"none", "laser_shot", "sword_slash"}
 VALID_DIFFICULTIES = {"easy", "medium", "hard"}
 VALID_WEATHER = {"none", "rain", "snow", "fog", "embers"}
 VALID_SOUND_PACKS = {"retro", "sci_fi", "fantasy"}
+VALID_LANGUAGES = {"en", "hi", "ru", "es", "fr", "de", "ja", "ko", "zh", "pt", "ar"}
 
 REQUIRED_CHARACTER_KEYS = {
     "hero", "enemy_1", "enemy_2", "npc", "coin",
@@ -34,9 +35,12 @@ def validate_story_plan(plan: dict) -> list[str]:
     """Return a list of validation errors. Empty list means valid."""
     errors = []
 
-    for field in ("story_id", "title", "premise", "art_style", "mood", "sound_pack"):
+    for field in ("story_id", "title", "premise", "art_style", "mood", "sound_pack", "language"):
         if field not in plan:
             errors.append(f"Missing top-level field: {field}")
+
+    if plan.get("language") not in VALID_LANGUAGES:
+        errors.append(f"Invalid language: {plan.get('language')}. Must be one of {VALID_LANGUAGES}")
 
     if plan.get("art_style") not in VALID_ART_STYLES:
         errors.append(f"Invalid art_style: {plan.get('art_style')}. Must be one of {VALID_ART_STYLES}")

@@ -1,0 +1,431 @@
+{
+  "level_id": "level_002",
+  "chapter": "\u091b\u093e\u092f\u093e \u0935\u0928 \u0915\u0940 \u0916\u094b\u091c",
+  "chapter_number": 2,
+  "narration": "\u0906\u092a \u091c\u093e\u0926\u0941\u0908 \u0935\u0928 \u092e\u0947\u0902 \u092a\u094d\u0930\u0935\u0947\u0936 \u0915\u0930\u0924\u0940 \u0939\u0948\u0902, \u091c\u0939\u093e\u0901 \u092a\u0947\u0921\u093c\u094b\u0902 \u0915\u0940 \u092a\u0924\u094d\u0924\u093f\u092f\u093e\u0901 \u092e\u0941\u0930\u091d\u093e \u0930\u0939\u0940 \u0939\u0948\u0902 \u0914\u0930 \u0939\u0935\u093e \u092e\u0947\u0902 \u0909\u0926\u093e\u0938\u0940 \u091b\u093e\u0908 \u0939\u0941\u0908 \u0939\u0948\u0964 \u0935\u0928 \u0915\u094b \u092c\u091a\u093e\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u0906\u092a\u0915\u094b \u0909\u0938\u0915\u0940 \u0916\u094b\u0908 \u0939\u0941\u0908 \u090a\u0930\u094d\u091c\u093e \u0915\u0947 \u0938\u094d\u0930\u094b\u0924\u094b\u0902 \u0915\u094b \u092b\u093f\u0930 \u0938\u0947 \u0916\u094b\u091c\u0928\u093e \u0939\u094b\u0917\u093e\u0964",
+  "background": "static/assets/d2459b74/background.png",
+  "bg_music": "audio/ch02_ambient.mp3",
+  "world": {
+    "width": 4800,
+    "height": 1080
+  },
+  "assets": {
+    "character": "static/assets/d2459b74/character.png",
+    "enemy_1": "static/assets/d2459b74/enemy_1.png",
+    "platform": "static/assets/d2459b74/platform.png",
+    "npc": "static/assets/d2459b74/npc.png",
+    "background": "static/assets/d2459b74/background.png"
+  },
+  "mission": {
+    "type": "collect_all",
+    "description": "\u0935\u0928 \u0915\u0940 \u0936\u0915\u094d\u0924\u093f \u0915\u094b \u092c\u0939\u093e\u0932 \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f 5 \u091a\u092e\u0915\u0924\u0947 \u0939\u0941\u090f \u092a\u094d\u0930\u093e\u091a\u0940\u0928 \u0930\u0941\u0928 (\u091c\u093e\u0926\u0941\u0908 \u092a\u094d\u0930\u0924\u0940\u0915) \u090f\u0915\u0924\u094d\u0930 \u0915\u0930\u0947\u0902\u0964",
+    "target_count": 5,
+    "success_text": "\u0906\u092a\u0928\u0947 \u0930\u0941\u0928 \u090f\u0915\u0924\u094d\u0930 \u0915\u0930 \u0932\u093f\u090f \u0914\u0930 \u0935\u0928 \u092e\u0947\u0902 \u0925\u094b\u0921\u093c\u0940 \u091a\u092e\u0915 \u0935\u093e\u092a\u0938 \u0906 \u0917\u0908! \u0906\u092a\u0915\u094b \u0905\u092a\u0928\u0940 \u091c\u093e\u0926\u0941\u0908 \u0936\u0915\u094d\u0924\u093f\u092f\u093e\u0901 \u092e\u0939\u0938\u0942\u0938 \u0939\u094b\u0924\u0940 \u0939\u0948\u0902\u0964",
+    "fail_text": "\u0906\u092a \u0938\u092d\u0940 \u0930\u0941\u0928 \u090f\u0915\u0924\u094d\u0930 \u0928\u0939\u0940\u0902 \u0915\u0930 \u092a\u093e\u0908\u0902 \u0914\u0930 \u0935\u0928 \u0915\u093e \u0905\u0902\u0927\u0947\u0930\u093e \u0914\u0930 \u092c\u0922\u093c \u0917\u092f\u093e\u0964 \u092b\u093f\u0930 \u0938\u0947 \u0915\u094b\u0936\u093f\u0936 \u0915\u0930\u0947\u0902\u0964"
+  },
+  "platforms": [
+    {
+      "x": 0,
+      "y": 850,
+      "w": 500,
+      "h": 230,
+      "role": "ground",
+      "color": "#8B9A7A"
+    },
+    {
+      "x": 200,
+      "y": 680,
+      "w": 192,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 600,
+      "y": 850,
+      "w": 400,
+      "h": 230,
+      "role": "ground",
+      "color": "#8B9A7A"
+    },
+    {
+      "x": 700,
+      "y": 650,
+      "w": 250,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 950,
+      "y": 550,
+      "w": 200,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 1100,
+      "y": 850,
+      "w": 300,
+      "h": 230,
+      "role": "ground",
+      "color": "#8B9A7A"
+    },
+    {
+      "x": 1200,
+      "y": 500,
+      "w": 200,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 1500,
+      "y": 850,
+      "w": 200,
+      "h": 230,
+      "role": "ground",
+      "color": "#8B9A7A"
+    },
+    {
+      "x": 1750,
+      "y": 700,
+      "w": 200,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 1800,
+      "y": 850,
+      "w": 300,
+      "h": 230,
+      "role": "ground",
+      "color": "#8B9A7A"
+    },
+    {
+      "x": 2000,
+      "y": 600,
+      "w": 250,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 2200,
+      "y": 850,
+      "w": 250,
+      "h": 230,
+      "role": "ground",
+      "color": "#8B9A7A"
+    },
+    {
+      "x": 2500,
+      "y": 700,
+      "w": 200,
+      "h": 48,
+      "role": "platform",
+      "is_moving": true,
+      "move_range": 100,
+      "move_speed": 50
+    },
+    {
+      "x": 2600,
+      "y": 850,
+      "w": 350,
+      "h": 230,
+      "role": "ground",
+      "color": "#8B9A7A"
+    },
+    {
+      "x": 2750,
+      "y": 600,
+      "w": 200,
+      "h": 48,
+      "role": "platform",
+      "is_moving": true,
+      "move_range": 100,
+      "move_speed": 50
+    },
+    {
+      "x": 3050,
+      "y": 850,
+      "w": 400,
+      "h": 230,
+      "role": "ground",
+      "color": "#8B9A7A"
+    },
+    {
+      "x": 3100,
+      "y": 700,
+      "w": 192,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 3550,
+      "y": 850,
+      "w": 600,
+      "h": 230,
+      "role": "ground",
+      "color": "#8B9A7A"
+    },
+    {
+      "x": 3600,
+      "y": 650,
+      "w": 250,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 3900,
+      "y": 550,
+      "w": 200,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 4150,
+      "y": 650,
+      "w": 200,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 4250,
+      "y": 850,
+      "w": 400,
+      "h": 230,
+      "role": "ground",
+      "color": "#8B9A7A"
+    }
+  ],
+  "pickups": [
+    {
+      "role": "coin",
+      "x": 1300,
+      "y": 468
+    },
+    {
+      "role": "coin",
+      "x": 2100,
+      "y": 568
+    },
+    {
+      "role": "coin",
+      "x": 3200,
+      "y": 668
+    },
+    {
+      "role": "coin",
+      "x": 4000,
+      "y": 518
+    },
+    {
+      "role": "coin",
+      "x": 4250,
+      "y": 618
+    },
+    {
+      "role": "health",
+      "x": 2300,
+      "y": 818
+    },
+    {
+      "role": "health",
+      "x": 4400,
+      "y": 818
+    }
+  ],
+  "enemies": [
+    {
+      "role": "enemy_2",
+      "x": 750,
+      "y": 786,
+      "patrol": [
+        650,
+        950
+      ],
+      "behavior": "patrol"
+    },
+    {
+      "role": "enemy_1",
+      "x": 1900,
+      "y": 642,
+      "patrol": [
+        1800,
+        2100
+      ],
+      "behavior": "patrol"
+    },
+    {
+      "role": "enemy_2",
+      "x": 2700,
+      "y": 786,
+      "patrol": [
+        2650,
+        2950
+      ],
+      "behavior": "chase",
+      "detect_range": 300,
+      "chase_speed": 200
+    },
+    {
+      "role": "enemy_1",
+      "x": 3500,
+      "y": 792,
+      "patrol": [
+        3400,
+        3700
+      ],
+      "behavior": "patrol"
+    },
+    {
+      "role": "enemy_2",
+      "x": 3800,
+      "y": 786,
+      "patrol": [
+        3700,
+        4000
+      ],
+      "behavior": "patrol"
+    },
+    {
+      "role": "enemy_1",
+      "x": 4300,
+      "y": 792,
+      "patrol": [
+        4200,
+        4500
+      ],
+      "behavior": "chase",
+      "detect_range": 250,
+      "chase_speed": 180
+    }
+  ],
+  "blocks": [
+    {
+      "x": 400,
+      "y": 802,
+      "w": 48,
+      "h": 48,
+      "role": "breakable",
+      "has_item": true,
+      "item": "coin"
+    },
+    {
+      "x": 1050,
+      "y": 802,
+      "w": 48,
+      "h": 48,
+      "role": "breakable",
+      "has_item": true,
+      "item": "coin"
+    },
+    {
+      "x": 2800,
+      "y": 802,
+      "w": 48,
+      "h": 48,
+      "role": "breakable",
+      "has_item": true,
+      "item": "coin"
+    },
+    {
+      "x": 3700,
+      "y": 802,
+      "w": 48,
+      "h": 48,
+      "role": "breakable",
+      "has_item": false
+    }
+  ],
+  "hazards": [
+    {
+      "x": 1700,
+      "y": 838,
+      "w": 100,
+      "h": 12,
+      "type": "spikes"
+    },
+    {
+      "x": 2500,
+      "y": 830,
+      "w": 100,
+      "h": 20,
+      "type": "lava"
+    },
+    {
+      "x": 3450,
+      "y": 838,
+      "w": 100,
+      "h": 12,
+      "type": "spikes"
+    }
+  ],
+  "bounce_pads": [],
+  "teleporters": [
+    {
+      "x": 650,
+      "y": 780,
+      "w": 48,
+      "h": 70,
+      "link_id": "warp_a",
+      "color": "#3498db"
+    },
+    {
+      "x": 1000,
+      "y": 480,
+      "w": 48,
+      "h": 70,
+      "link_id": "warp_a",
+      "color": "#3498db"
+    }
+  ],
+  "npcs": [
+    {
+      "role": "npc",
+      "x": 200,
+      "y": 780,
+      "name": "\u091c\u094d\u091e\u093e\u0928\u0935\u093e\u0928 \u0909\u0932\u094d\u0932\u0942",
+      "dialogue": [
+        {
+          "speaker": "\u091c\u094d\u091e\u093e\u0928\u0935\u093e\u0928 \u0909\u0932\u094d\u0932\u0942",
+          "text": "\u0928\u092e\u0938\u094d\u0924\u0947, \u092c\u0939\u093e\u0926\u0941\u0930 \u0906\u0924\u094d\u092e\u093e\u0964 \u0935\u0928 \u0915\u0940 \u0936\u0915\u094d\u0924\u093f \u0932\u0941\u092a\u094d\u0924 \u0939\u094b \u0930\u0939\u0940 \u0939\u0948\u0964 \u0924\u0941\u092e\u094d\u0939\u0947\u0902 \u092a\u094d\u0930\u093e\u091a\u0940\u0928 \u0930\u0941\u0928 \u0916\u094b\u091c\u0928\u0947 \u0939\u094b\u0902\u0917\u0947\u0964",
+          "audio_url": "/api/assets/d2459b74/npc_npc_2_0.wav"
+        },
+        {
+          "speaker": "system",
+          "text": "\u0935\u0928 \u0915\u0940 \u0936\u0915\u094d\u0924\u093f \u0915\u094b \u092c\u0939\u093e\u0932 \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f 5 \u091a\u092e\u0915\u0924\u0947 \u0939\u0941\u090f \u092a\u094d\u0930\u093e\u091a\u0940\u0928 \u0930\u0941\u0928 (\u091c\u093e\u0926\u0941\u0908 \u092a\u094d\u0930\u0924\u0940\u0915) \u090f\u0915\u0924\u094d\u0930 \u0915\u0930\u0947\u0902\u0964"
+        }
+      ]
+    }
+  ],
+  "exit": {
+    "role": "exit_door",
+    "x": 4500,
+    "y": 658,
+    "w": 128,
+    "h": 192,
+    "unlock_condition": "none",
+    "locked_dialogue": "",
+    "target_level": "level_003"
+  },
+  "player_spawn": {
+    "x": 60,
+    "y": 780
+  },
+  "physics": {
+    "gravity": 1200,
+    "jump_force": -700,
+    "move_speed": 300,
+    "max_fall_speed": 600,
+    "friction": 800,
+    "coyote_time_ms": 80,
+    "jump_buffer_ms": 100
+  },
+  "mechanics": {
+    "auto_run": false,
+    "player_action": "laser_shot",
+    "gravity_scale": 1.0,
+    "double_jump": true,
+    "dark_mode": false,
+    "weather": "fog",
+    "weather_intensity": 0.6
+  }
+}

@@ -22,6 +22,7 @@ The backend orchestrates a **3-agent ADK pipeline** that generates:
 - **Story plan** — title, premise, 3 chapters with missions, mechanics, difficulty
 - **5 game sprites** — hero, enemy, platform, NPC, background (parallel Gemini calls + rembg)
 - **Level layouts** — platforms, enemies, pickups, hazards, physics, missions (validated + auto-fixed)
+- **NPC voice** — dialogue TTS via Gemini (multilingual: Hindi, Russian, etc.; English default)
 - **Ambient music** — per-chapter loops via Lyria on Vertex AI
 - **Chapter backgrounds** — unique per chapter
 
@@ -88,9 +89,24 @@ graph TD
 | `session` | `{session_id}` | Pipeline starts |
 | `story_plan` | Full story plan JSON | StoryPlanner completes |
 | `image` | `{role, url}` | Each sprite generated |
-| `level_ready` | `{level_json, background_url, music_url}` | Chapter 1 ready |
+| `level_ready` | `{level_json, background_url, music_url}` | Chapter ready (text first; NPC audio streams later) |
+| `npc_audio` | `{npc, line_index, audio_url}` | Each NPC dialogue line TTS ready (progressive) |
 | `audio` | `{role, url}` | Music generated |
 | `complete` | `{}` | Pipeline done |
+
+### NPC Voice (Frontend Contract)
+
+**Dialogue line structure** (in `level_json.npcs[].dialogue[]`):
+```json
+{ "speaker": "Peppermint Elder", "text": "Welcome, little one!", "audio_url": "/api/assets/{session_id}/npc_peppermint_elder_1_0.wav" }
+```
+- `audio_url` is optional; if absent, render text-only. When present, play via `new Audio(audio_url)`.
+
+**Progressive streaming:** The `level_ready` event is sent immediately (dialogue may not have `audio_url` yet). As each NPC line is synthesized, an `npc_audio` event is streamed:
+```json
+{ "npc": "Peppermint Elder", "line_index": 0, "audio_url": "/api/assets/.../npc_peppermint_elder_1_0.wav" }
+```
+- Frontend: on `npc_audio`, find the dialogue line (by npc name + line_index) and set `audio_url`. Optionally preload `new Audio(audio_url)`.
 
 ---
 
@@ -149,6 +165,9 @@ python tests/test_level_gen.py
 # Music generation (requires GOOGLE_CLOUD_PROJECT)
 python tests/test_music_gen.py
 
+# TTS generation (requires GOOGLE_API_KEY)
+python tests/test_tts_gen.py
+
 # Full ADK pipeline
 python tests/test_adk_pipeline.py
 ```
@@ -199,6 +218,7 @@ This builds the Docker image, deploys to Cloud Run (2Gi RAM, 2 CPU, 300s timeout
 │   ├── sprite_cleaner.py    # rembg + alpha-threshold crop
 │   ├── level_gen.py         # Level JSON + chapter background generation
 │   ├── audio_gen.py         # Lyria music generation (Vertex AI)
+│   ├── tts_gen.py           # NPC dialogue TTS (Gemini)
 │   └── story_planner.py     # Story plan generation (standalone)
 ├── tests/                   # Per-service test scripts
 ├── static/assets/           # Generated assets (per session)

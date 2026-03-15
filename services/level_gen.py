@@ -46,8 +46,10 @@ async def generate_level_json(
     chapter_num = chapter.get("chapter_number", 1)
     art_style = story_plan.get("art_style", "retro_pixel")
     characters = story_plan.get("characters", {})
+    language = story_plan.get("language", "en")
 
     user_message = (
+        f"LANGUAGE: All dialogue and in-game text must be in {language}. (en=English, hi=Hindi, ru=Russian, es=Spanish, fr=French, de=German, ja=Japanese, ko=Korean, zh=Chinese, pt=Portuguese, ar=Arabic)\n\n"
         f"Generate a level layout for Chapter {chapter_num}: "
         f'"{chapter.get("title", "Untitled")}"\n\n'
         f"Setting: {chapter.get('setting', 'a game world')}\n"

@@ -10,17 +10,24 @@ import asyncio
 import json
 import logging
 import os
+import re
 
 from google.adk.tools import ToolContext
 
 from services.audio_gen import generate_ambient_music
 from services.image_gen import generate_story_assets
 from services.level_gen import generate_chapter_background, generate_level_json
+from services.tts_gen import generate_npc_dialogue_audio
 from sse import stream_to_client
 
 logger = logging.getLogger(__name__)
 
 ASSETS_ROOT = "static/assets"
+
+
+def _npc_slug(name: str) -> str:
+    """Convert NPC name to filesystem-safe slug."""
+    return re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_") or "npc"
 
 
 def _get_output_dir(tool_context: ToolContext) -> str:
@@ -90,6 +97,136 @@ async def generate_assets(tool_context: ToolContext) -> dict:
         return {"status": "error", "message": str(e)}
 
 
+TTS_SEMAPHORE = asyncio.Semaphore(3)
+TTS_TIMEOUT = 15
+
+
+async def _generate_npc_voices(
+    level_json: dict,
+    session_id: str,
+    output_dir: str,
+    story_plan: dict,
+    chapter_number: int,
+) -> dict:
+    """
+    Generate TTS for all NPC dialogue lines (blocking).
+    Returns level_json with audio_url added to each dialogue line.
+    """
+    npcs = level_json.get("npcs") or []
+    if not npcs:
+        return level_json
+
+    language = story_plan.get("language", "en")
+    mood = story_plan.get("mood", "adventure")
+
+    async def _one_line(npc: dict, idx: int, line: dict) -> tuple[str | None, dict, int]:
+        speaker = line.get("speaker", "")
+        text = (line.get("text") or "").strip()
+        if speaker == "system" or not text or len(text) > 400:
+            return None, line, idx
+        name = npc.get("name", "npc")
+        slug = _npc_slug(name)
+        filename = f"npc_{slug}_{chapter_number}_{idx}.wav"
+        path = os.path.join(output_dir, filename)
+        async with TTS_SEMAPHORE:
+            try:
+                result = await asyncio.wait_for(
+                    generate_npc_dialogue_audio(
+                        text=text,
+                        speaker_name=name,
+                        mood=mood,
+                        output_path=path,
+                        language=language,
+                    ),
+                    timeout=TTS_TIMEOUT,
+                )
+            except asyncio.TimeoutError:
+                logger.warning("TTS timeout for %s line %d", name, idx)
+                return None, line, idx
+            except Exception as e:
+                logger.warning("TTS failed for %s line %d: %s", name, idx, e)
+                return None, line, idx
+        if result:
+            url = _asset_url(session_id, result)
+            line["audio_url"] = url
+            return url, line, idx
+        return None, line, idx
+
+    tasks = []
+    for npc in npcs:
+        dialogue = npc.get("dialogue") or []
+        for idx, line in enumerate(dialogue):
+            tasks.append(_one_line(npc, idx, line))
+
+    await asyncio.gather(*tasks, return_exceptions=True)
+    return level_json
+
+
+async def _generate_npc_voices_and_stream(
+    level_json: dict,
+    session_id: str,
+    output_dir: str,
+    story_plan: dict,
+    chapter_number: int,
+    level_path: str,
+) -> None:
+    """
+    Generate TTS in background; stream npc_audio events as each line completes.
+    Updates level file on disk when all complete.
+    """
+    npcs = level_json.get("npcs") or []
+    if not npcs:
+        return
+
+    language = story_plan.get("language", "en")
+    mood = story_plan.get("mood", "adventure")
+
+    async def _one_line(npc: dict, idx: int, line: dict) -> None:
+        speaker = line.get("speaker", "")
+        text = (line.get("text") or "").strip()
+        if speaker == "system" or not text or len(text) > 400:
+            return
+        name = npc.get("name", "npc")
+        slug = _npc_slug(name)
+        filename = f"npc_{slug}_{chapter_number}_{idx}.wav"
+        path = os.path.join(output_dir, filename)
+        async with TTS_SEMAPHORE:
+            try:
+                result = await asyncio.wait_for(
+                    generate_npc_dialogue_audio(
+                        text=text,
+                        speaker_name=name,
+                        mood=mood,
+                        output_path=path,
+                        language=language,
+                    ),
+                    timeout=TTS_TIMEOUT,
+                )
+            except asyncio.TimeoutError:
+                logger.warning("TTS timeout for %s line %d", name, idx)
+                return
+            except Exception as e:
+                logger.warning("TTS failed for %s line %d: %s", name, idx, e)
+                return
+        if result:
+            url = _asset_url(session_id, result)
+            line["audio_url"] = url
+            await stream_to_client(session_id, {
+                "type": "npc_audio",
+                "data": {"npc": name, "line_index": idx, "audio_url": url},
+            })
+
+    tasks = [_one_line(npc, idx, line) for npc in npcs for idx, line in enumerate(npc.get("dialogue") or [])]
+    await asyncio.gather(*tasks, return_exceptions=True)
+
+    try:
+        with open(level_path, "w") as f:
+            json.dump(level_json, f, indent=2)
+        logger.info("Updated level file with %d NPC audio URLs", sum(1 for n in npcs for _ in (n.get("dialogue") or [])))
+    except Exception as e:
+        logger.warning("Failed to update level file with audio_url: %s", e)
+
+
 async def generate_chapter_level(chapter_number: int, tool_context: ToolContext) -> dict:
     """
     Generate a complete playable level for a specific chapter.
@@ -146,6 +283,16 @@ async def generate_chapter_level(chapter_number: int, tool_context: ToolContext)
             json.dump(level_json, f, indent=2)
         result["level_json"] = level_json
         result["level_path"] = level_path
+        asyncio.create_task(
+            _generate_npc_voices_and_stream(
+                level_json,
+                session_id,
+                output_dir,
+                story_plan,
+                chapter_number,
+                level_path,
+            )
+        )
 
     bg_url = None
     if isinstance(bg_path, Exception):
@@ -236,6 +383,7 @@ async def prefetch_chapter_level(
         result["level_json"] = None
         result["level_error"] = str(level_json)
     else:
+        level_json = await _generate_npc_voices(level_json, session_id, output_dir, story_plan, chapter_number)
         level_path = os.path.join(output_dir, f"level_ch{chapter_number:02d}.json")
         with open(level_path, "w") as f:
             json.dump(level_json, f, indent=2)

@@ -1,0 +1,306 @@
+{
+  "level_id": "level_001",
+  "chapter": "The Gummy Landing",
+  "chapter_number": 1,
+  "narration": "You crash-land on a planet made entirely of sweets, your tiny spaceship damaged. Sticky gummy hills stretch as far as the eye can see, and the air smells like cotton candy.",
+  "background": "static/assets/dc0fae06/background.png",
+  "bg_music": "audio/ch01_ambient.mp3",
+  "world": {
+    "width": 4800,
+    "height": 1080
+  },
+  "assets": {
+    "character": "static/assets/dc0fae06/character.png",
+    "enemy_1": "static/assets/dc0fae06/enemy_1.png",
+    "platform": "static/assets/dc0fae06/platform.png",
+    "npc": "static/assets/dc0fae06/npc.png",
+    "background": "static/assets/dc0fae06/background.png"
+  },
+  "mission": {
+    "type": "find_key_exit",
+    "description": "Find the 'Crystalized Sugar Core' to repair your ship's engine and escape this gummy planet.",
+    "target_count": 1,
+    "success_text": "You found the sugar core! Your ship is partially repaired, allowing you to venture deeper into the candy galaxy.",
+    "fail_text": "Without the sugar core, your ship remains stranded. You must try again to find it!"
+  },
+  "platforms": [
+    {
+      "x": 0,
+      "y": 850,
+      "w": 700,
+      "h": 230,
+      "role": "ground",
+      "color": "#f8c8d8"
+    },
+    {
+      "x": 750,
+      "y": 680,
+      "w": 200,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 900,
+      "y": 850,
+      "w": 600,
+      "h": 230,
+      "role": "ground",
+      "color": "#f8c8d8"
+    },
+    {
+      "x": 1400,
+      "y": 700,
+      "w": 200,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 1650,
+      "y": 850,
+      "w": 800,
+      "h": 230,
+      "role": "ground",
+      "color": "#f8c8d8"
+    },
+    {
+      "x": 2200,
+      "y": 600,
+      "w": 192,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 2480,
+      "y": 850,
+      "w": 800,
+      "h": 230,
+      "role": "ground",
+      "color": "#f8c8d8"
+    },
+    {
+      "x": 3000,
+      "y": 750,
+      "w": 250,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 3300,
+      "y": 850,
+      "w": 600,
+      "h": 230,
+      "role": "ground",
+      "color": "#f8c8d8"
+    },
+    {
+      "x": 3600,
+      "y": 780,
+      "w": 200,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 1079,
+      "y": 690,
+      "w": 192,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 1804,
+      "y": 650,
+      "w": 192,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 2600,
+      "y": 675,
+      "w": 192,
+      "h": 48,
+      "role": "platform"
+    },
+    {
+      "x": 3329,
+      "y": 765,
+      "w": 192,
+      "h": 48,
+      "role": "platform"
+    }
+  ],
+  "pickups": [
+    {
+      "role": "coin",
+      "x": 1450,
+      "y": 668
+    },
+    {
+      "role": "health",
+      "x": 1850,
+      "y": 818
+    },
+    {
+      "role": "key",
+      "x": 2250,
+      "y": 568
+    },
+    {
+      "role": "coin",
+      "x": 2700,
+      "y": 818
+    },
+    {
+      "role": "coin",
+      "x": 3050,
+      "y": 718
+    },
+    {
+      "role": "coin",
+      "x": 3090,
+      "y": 718
+    },
+    {
+      "role": "health",
+      "x": 3300,
+      "y": 818
+    }
+  ],
+  "enemies": [
+    {
+      "role": "enemy_1",
+      "x": 950,
+      "y": 802,
+      "patrol": [
+        920,
+        1400
+      ],
+      "behavior": "patrol"
+    },
+    {
+      "role": "enemy_1",
+      "x": 2000,
+      "y": 802,
+      "patrol": [
+        1900,
+        2300
+      ],
+      "behavior": "patrol"
+    },
+    {
+      "role": "enemy_1",
+      "x": 2550,
+      "y": 802,
+      "patrol": [
+        2500,
+        3100
+      ],
+      "behavior": "patrol"
+    },
+    {
+      "role": "enemy_1",
+      "x": 3500,
+      "y": 802,
+      "patrol": [
+        3400,
+        3700
+      ],
+      "behavior": "patrol"
+    }
+  ],
+  "blocks": [
+    {
+      "x": 1450,
+      "y": 652,
+      "w": 48,
+      "h": 48,
+      "role": "breakable",
+      "has_item": true,
+      "item": "coin"
+    },
+    {
+      "x": 2700,
+      "y": 802,
+      "w": 48,
+      "h": 48,
+      "role": "breakable",
+      "has_item": true,
+      "item": "coin"
+    }
+  ],
+  "hazards": [
+    {
+      "x": 1700,
+      "y": 838,
+      "w": 150,
+      "h": 12,
+      "type": "spikes"
+    }
+  ],
+  "bounce_pads": [
+    {
+      "x": 600,
+      "y": 834,
+      "w": 64,
+      "h": 16,
+      "bounce_force": -900
+    }
+  ],
+  "teleporters": [],
+  "npcs": [
+    {
+      "role": "npc",
+      "x": 250,
+      "y": 780,
+      "name": "Cloudy",
+      "dialogue": [
+        {
+          "speaker": "Cloudy",
+          "text": "Oh dear, a space traveler! Welcome to Candyland. You seem to be in a sticky situation.",
+          "audio_url": "/api/assets/dc0fae06/npc_cloudy_1_0.wav"
+        },
+        {
+          "speaker": "Cloudy",
+          "text": "Your ship needs a 'Crystalized Sugar Core' to power up. I saw one sparkling near those higher wafer platforms.",
+          "audio_url": "/api/assets/dc0fae06/npc_cloudy_1_1.wav"
+        },
+        {
+          "speaker": "system",
+          "text": "Mission Objective: Find the 'Crystalized Sugar Core'!"
+        }
+      ]
+    }
+  ],
+  "exit": {
+    "role": "exit_door",
+    "x": 3636,
+    "y": 588,
+    "w": 128,
+    "h": 192,
+    "unlock_condition": "has_key",
+    "locked_dialogue": "The gingerbread door is sealed! You need the 'Crystalized Sugar Core' to open it.",
+    "target_level": "level_002"
+  },
+  "player_spawn": {
+    "x": 60,
+    "y": 780
+  },
+  "physics": {
+    "gravity": 1200,
+    "jump_force": -700,
+    "move_speed": 300,
+    "max_fall_speed": 600,
+    "friction": 800,
+    "coyote_time_ms": 80,
+    "jump_buffer_ms": 100
+  },
+  "mechanics": {
+    "auto_run": false,
+    "player_action": "none",
+    "gravity_scale": 1.0,
+    "double_jump": false,
+    "dark_mode": false,
+    "spotlight_radius": 150,
+    "weather": "snow",
+    "weather_intensity": 0.3
+  }
+}

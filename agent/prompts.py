@@ -154,6 +154,11 @@ Respond with ONLY a valid JSON object matching this schema (no markdown, no extr
   }
 }
 
+## Language
+
+- All in-game text (NPC dialogue, locked_dialogue, mission description, success_text, fail_text) MUST match the story plan language.
+- Default to English if language is not specified in the story plan.
+
 ## Rules
 - All ground platforms must have role="ground" and be at y=850, h=230.
 - First ground segment must start at x=0.
@@ -211,6 +216,14 @@ Chapter 1 = easy: simple mechanics, gentle introduction, find_key_exit or reach_
 Chapter 2 = medium: add combat or new ability, rising tension, collect_all or kill_all mission
 Chapter 3 = hard: full challenge, dark_mode or complex layout, survive or kill_all mission
 
+## Language
+
+- Infer the story language from the user's prompt: "in Hindi", "Hindi story", "हिंदी में" -> "hi"; "in Russian" -> "ru"; "en español" -> "es"; etc.
+- **Default: "en"** when no language hint is present.
+- Use BCP-47 codes: en, hi, ru, es, fr, de, ja, ko, zh, pt, ar, etc.
+- **CRITICAL:** All text output (title, premise, chapter titles, setting, narration, mission description, success_text, fail_text) MUST be written in that language.
+- **Exception:** Character descriptions in `characters` may stay in English for reliable sprite generation; all other text must match the story language.
+
 ## Rules
 
 - Mechanics MUST fit the story theme (space -> low gravity + laser; fairy -> double jump + no weapon)
@@ -232,6 +245,7 @@ Respond with ONLY a valid JSON object matching this exact schema (no markdown, n
   "art_style": "<one of: retro_pixel, flat_vector, neon_cyberpunk, watercolor, ink_manga, chalk, gothic>",
   "mood": "<mood descriptor like adventure_mystery, whimsical_wonder, dark_tension>",
   "sound_pack": "<one of: retro, sci_fi, fantasy>",
+  "language": "<BCP-47 code: en, hi, ru, es, fr, de, ja, ko, zh, pt, ar, etc.>",
   "chapters": [
     {
       "chapter_number": 1,
