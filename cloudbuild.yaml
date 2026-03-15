@@ -38,3 +38,6 @@ substitutions:
   _REGION: 'us-central1'
   _REPOSITORY: 'cloud-run-source-deploy'
   _IMAGE: 'mirror-land-backend'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
