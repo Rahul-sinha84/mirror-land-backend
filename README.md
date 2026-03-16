@@ -13,6 +13,43 @@ Deploy to Cloud Run to get a live backend URL. See [Deploy to Google Cloud Run](
 
 ---
 
+## ☁️ Google Cloud Deployment Proof
+
+This project is deployed and runs on **Google Cloud** using the following services:
+
+- 🚀 **Cloud Run** – hosts the FastAPI backend
+- 🔧 **Cloud Build** – CI/CD pipeline that builds and deploys the container
+- 📦 **Artifact Registry** – stores Docker images
+- 🤖 **Vertex AI / Gemini** – used for multimodal generation (story planning, assets, dialogue, and music)
+
+The following video demonstrates the application running along with **live backend logs from Google Cloud Run**. At **timestamp 1:00**, you can see the **Google Cloud logs streaming while the game is running**, proving the backend is deployed on GCP.
+
+▶️ [Demo video with live GCP logs](https://youtu.be/L5jzoCi7DW0?t=59)
+
+### ⚙️ Automated Deployment (CI/CD)
+
+Deployment is automated using **Google Cloud Build**. Whenever code is pushed to the repository, the pipeline:
+
+1. Builds the Docker image
+2. Pushes the image to **Artifact Registry**
+3. Deploys the backend to **Cloud Run**
+
+- **Cloud Build config:** [cloudbuild.yaml](https://github.com/Rahul-sinha84/mirror-land-backend/blob/main/cloudbuild.yaml)
+- **Manual deploy script:** [deploy.sh](https://github.com/Rahul-sinha84/mirror-land-backend/blob/main/deploy.sh)
+
+### 🧠 Gemini / Vertex AI Usage
+
+Gemini models are used to generate:
+
+- 📖 Story planning
+- 🏗️ Level structure
+- 🎨 Game assets
+- 🗣️ NPC dialogue
+
+Example Gemini API usage in the backend: [services/story_planner.py](https://github.com/Rahul-sinha84/mirror-land-backend/blob/main/services/story_planner.py) — demonstrates how the backend uses **Gemini models via Google AI / Vertex AI APIs** to generate the story plan used by the game.
+
+---
+
 ## What It Does
 
 Type one sentence. Get a playable game.
@@ -198,17 +235,6 @@ python tests/test_adk_pipeline.py
 
 ## Deploy to Google Cloud Run
 
-### Automated Deployment
-
-Deployment is automated via infrastructure-as-code and scripts:
-
-- **[cloudbuild.yaml](cloudbuild.yaml)** — Cloud Build configuration. When a Cloud Build trigger fires on push to GitHub, it builds the Docker image, pushes to Artifact Registry, and deploys to Cloud Run.
-- **[deploy.sh](deploy.sh)** — Manual deployment script. Runs `gcloud run deploy --source .` for local or CI use.
-
-**Proof of cloud deployment (hackathon):**
-- **Live app:** [https://mirror-land-gilt.vercel.app/](https://mirror-land-gilt.vercel.app/)
-- **Cloud Build CI/CD:** [cloudbuild.yaml](https://github.com/Rahul-sinha84/mirror-land-backend/blob/main/cloudbuild.yaml)
-
 ### Prerequisites
 
 - `gcloud` CLI installed and authenticated
@@ -294,9 +320,10 @@ This builds the Docker image, deploys to Cloud Run (2Gi RAM, 2 CPU, 300s timeout
 
 ---
 
-## Google Cloud Services Used
+## Built For
 
-- **Gemini API** — Story planning, image generation, level design (via Google AI Studio key)
-- **Vertex AI** — Lyria music generation (ambient loops per chapter)
-- **Cloud Run** — Serverless deployment with auto-scaling (0-3 instances)
-- **Cloud Build** — Automated build and deploy on push (see [cloudbuild.yaml](cloudbuild.yaml))
+🚀 **Gemini Live Agent Challenge 2026**
+
+Creative Storyteller Track – *Multimodal Storytelling with Interleaved Output*
+
+#GeminiLiveAgentChallenge

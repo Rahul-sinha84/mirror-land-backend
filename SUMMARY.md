@@ -35,24 +35,25 @@ User types prompt → AI generates story + art + levels → Player plays the gam
 | Game engine | Vanilla JS + HTML5 Canvas |
 | Backend | Python + FastAPI |
 | AI agents | Google ADK (3 agents: StoryPlanner, StoryArchitect, LevelBuilder) |
-| Image generation | Gemini 2.5 Flash (interleaved text + image) |
-| Audio generation | Gemini native audio (ambient music per level) |
+| Image generation | Gemini 2.5 Flash Image (interleaved text + image) |
+| Music generation | Lyria (lyria-002) on Vertex AI (ambient loops per chapter) |
+| NPC voice | Gemini TTS (gemini-2.5-flash-preview-tts) |
 | Game SFX | Procedural Web Audio (zero latency, no AI needed) |
 | Streaming | Server-Sent Events (SSE) |
-| Deploy | Google Cloud Run |
+| Deploy | Google Cloud Run + Cloud Build CI/CD |
 
 ## AI Architecture (Simple)
 
 **Agent 1: StoryPlanner** — Fast text-only (~2-3s). Generates story plan JSON (title, chapters, mechanics, character descriptions).
 
-**Agent 2: StoryArchitect** — Generates 4 assets: character, enemy_1, platform, background. Uses magenta background + rembg for reliable extraction. Pickups (coin, health, key) and NPC/exit/breakable use procedural or dummy assets.
+**Agent 2: StoryArchitect** — Generates 5 assets in parallel: character, enemy_1, platform, npc, background. Uses white #FFFFFF background + rembg for reliable sprite extraction.
 
-**Agent 3: LevelBuilder** — For each chapter, generates background image, ambient music loop, and level layout JSON (platforms, enemies, pickups, physics, mechanics, mission).
+**Agent 3: LevelBuilder** — For each chapter, generates level layout JSON, chapter background image, ambient music (Lyria), and NPC dialogue audio (Gemini TTS) in parallel.
 
 **Safety nets:**
-- Level Validator auto-fixes unplayable layouts (gaps too wide, enemies floating, missing items)
-- rembg + crop for sprite background removal; chroma key fallback
-- Fallback to mock data if generation fails
+- 9-rule Level Validator auto-fixes unplayable layouts (gaps too wide, enemies floating, missing items)
+- rembg + alpha-threshold crop for sprite background removal
+- Graceful fallbacks if generation fails
 
 ## Game Features Built
 
@@ -70,18 +71,19 @@ User types prompt → AI generates story + art + levels → Player plays the gam
 
 ## Project Status
 
-- Frontend game engine: **DONE** (fully playable with mock data)
-- Mock levels: **4 levels** (1 flat vector auto-runner + 3 retro platformer)
-- AI architecture: **DESIGNED** (SPEC.md + AI.md)
-- Backend: **NOT STARTED**
-- Deployment: **NOT STARTED**
+- Frontend game engine: **DONE**
+- Backend (ADK pipeline): **DONE**
+- Deployment (Cloud Run + Cloud Build): **DONE**
+- NPC voice (Gemini TTS): **DONE**
+- Ambient music (Lyria): **DONE**
 
 ## File Guide
 
 | File | What's in it |
 |------|-------------|
-| `SPEC.md` | Full technical specification (architecture, code, schemas, deployment) |
+| `README.md` | Full project documentation with architecture, API, and deployment |
 | `AI.md` | AI-only reference (agent flow, prompts, constraints, validation) |
 | `SUMMARY.md` | This file — human-readable overview |
-| `frontend/` | Complete game engine (Vanilla JS + Vite) |
-| `mock/` | Mock JSON data + placeholder sprites for development |
+| `cloudbuild.yaml` | Cloud Build CI/CD config |
+| `deploy.sh` | Manual Cloud Run deployment script |
+| `Dockerfile` | Container setup (Python 3.12-slim + rembg) |
